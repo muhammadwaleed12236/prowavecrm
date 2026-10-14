@@ -68,14 +68,13 @@
                 <div>
                     <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Work Email</label>
                     <input type="email" name="email" id="email" required
-                           value="{{ old('email', 'admin@prowave.com') }}"
+                           value="{{ old('email') }}"
                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
                 </div>
 
                 <div>
                     <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Password</label>
                     <input type="password" name="password" id="password" required
-                           value="password123"
                            class="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
                 </div>
 
@@ -91,35 +90,7 @@
                 </button>
             </form>
 
-            <!-- Quick Demo Credentials Switcher -->
-            <div class="mt-8 pt-6 border-t border-slate-800">
-                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 text-center">Quick Demo Switcher</div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <button type="button" onclick="fillCreds('admin@prowave.com', 'password123')"
-                            class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-800/50 hover:bg-purple-900/40 text-purple-200 text-left transition">
-                        <div class="font-bold text-purple-300">Super Admin</div>
-                        <div class="text-[10px] text-purple-400 truncate">admin@prowave.com</div>
-                    </button>
-                    <button type="button" onclick="fillCreds('ali@prowave.com', 'password123')"
-                            class="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-800/50 hover:bg-cyan-900/40 text-cyan-200 text-left transition">
-                        <div class="font-bold text-cyan-300">Ali Khan (Agent)</div>
-                        <div class="text-[10px] text-cyan-400 truncate">ali@prowave.com</div>
-                    </button>
-                    <button type="button" onclick="fillCreds('usman@prowave.com', 'password123')"
-                            class="col-span-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-800/60 text-slate-300 text-left transition">
-                        <div class="font-bold text-slate-200">Usman Tariq (Agent 2)</div>
-                        <div class="text-[10px] text-slate-400 truncate">usman@prowave.com</div>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
-
-    <script>
-        function fillCreds(email, password) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-        }
-    </script>
 </body>
 </html>

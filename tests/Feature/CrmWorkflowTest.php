@@ -7,10 +7,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Database\Seeders\DatabaseSeeder;
 use App\Models\User;
 use App\Models\Lead;
-use App\Models\CallLog;
-use App\Models\Meeting;
-use App\Models\Deal;
+use App\Models\Role;
+use App\Models\Permission;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class CrmWorkflowTest extends TestCase
 {
@@ -27,6 +27,33 @@ class CrmWorkflowTest extends TestCase
         $response = $this->get('/login');
         $response->assertStatus(200);
         $response->assertSee('ProWave CRM');
+        $response->assertDontSee('Quick Demo Switcher');
+        $response->assertDontSee('password123');
+        $response->assertDontSee('admin@prowave.com');
+    }
+
+    public function test_seeder_creates_only_the_super_admin_account(): void
+    {
+        $admin = User::where('email', 'admin@prowave.com')->first();
+
+        $this->assertNotNull($admin);
+        $this->assertTrue(Hash::check('owner123', $admin->password));
+        $this->assertSame('super_admin', $admin->role);
+        $this->assertSame('super_admin', $admin->roleModel->slug);
+        $this->assertSame(1, User::count());
+        $this->assertSame(1, Role::count());
+        $this->assertSame(0, Lead::count());
+    }
+
+    public function test_super_admin_can_log_in_with_seeded_credentials(): void
+    {
+        $response = $this->post('/login', [
+            'email' => 'admin@prowave.com',
+            'password' => 'owner123',
+        ]);
+
+        $response->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs(User::where('email', 'admin@prowave.com')->first());
     }
 
     public function test_super_admin_can_access_admin_dashboard(): void
@@ -42,8 +69,8 @@ class CrmWorkflowTest extends TestCase
 
     public function test_sales_agent_can_access_agent_dashboard_with_isolation(): void
     {
-        $agentAli = User::where('email', 'ali@prowave.com')->first();
-        $this->assertNotNull($agentAli);
+        $agentAli = $this->createSalesAgent('ali@prowave.com');
+        $this->createLead($agentAli, User::where('role', 'super_admin')->first());
 
         $response = $this->actingAs($agentAli)->get('/dashboard');
         $response->assertStatus(200);
@@ -53,11 +80,13 @@ class CrmWorkflowTest extends TestCase
 
     public function test_agent_data_isolation_on_leads_pool(): void
     {
-        $agentAli = User::where('email', 'ali@prowave.com')->first();
-        $agentUsman = User::where('email', 'usman@prowave.com')->first();
+        $admin = User::where('role', 'super_admin')->first();
+        $agentAli = $this->createSalesAgent('ali@prowave.com');
+        $agentUsman = $this->createSalesAgent('usman@prowave.com');
+        $this->createLead($agentAli, $admin, ['client_name' => 'Ali Test Lead']);
 
         // Lead assigned to Usman
-        $usmanLead = Lead::where('assigned_to', $agentUsman->id)->first();
+        $usmanLead = $this->createLead($agentUsman, $admin, ['client_name' => 'Usman Test Lead']);
         $this->assertNotNull($usmanLead);
 
         // Ali should NOT see Usman's lead in his leads listing
@@ -72,8 +101,9 @@ class CrmWorkflowTest extends TestCase
 
     public function test_logging_cold_call_updates_lead_and_creates_meeting(): void
     {
-        $agentAli = User::where('email', 'ali@prowave.com')->first();
-        $aliLead = Lead::where('assigned_to', $agentAli->id)->first();
+        $admin = User::where('role', 'super_admin')->first();
+        $agentAli = $this->createSalesAgent('ali@prowave.com');
+        $aliLead = $this->createLead($agentAli, $admin);
 
         $meetingTime = Carbon::tomorrow()->setTime(14, 0)->format('Y-m-d\TH:i');
 
@@ -104,8 +134,9 @@ class CrmWorkflowTest extends TestCase
 
     public function test_logging_deal_won_stores_budget_and_shows_on_deals(): void
     {
-        $agentAli = User::where('email', 'ali@prowave.com')->first();
-        $aliLead = Lead::where('assigned_to', $agentAli->id)->first();
+        $admin = User::where('role', 'super_admin')->first();
+        $agentAli = $this->createSalesAgent('ali@prowave.com');
+        $aliLead = $this->createLead($agentAli, $admin);
 
         $response = $this->actingAs($agentAli)->post("/leads/{$aliLead->id}/call-logs", [
             'call_status' => 'deal_won',
@@ -247,12 +278,13 @@ class CrmWorkflowTest extends TestCase
         $response = $this->actingAs($admin)->get('/roles');
         $response->assertStatus(200);
         $response->assertSee('User Roles & Permissions');
-        $response->assertSee('Sales Manager');
+        $response->assertSee('Super Administrator');
+        $response->assertDontSee('Sales Manager');
     }
 
     public function test_sales_agent_cannot_access_roles_management(): void
     {
-        $agentAli = User::where('email', 'ali@prowave.com')->first();
+        $agentAli = $this->createSalesAgent('ali@prowave.com');
         $response = $this->actingAs($agentAli)->get('/roles');
         $response->assertStatus(403);
     }
@@ -275,5 +307,35 @@ class CrmWorkflowTest extends TestCase
             'name' => 'Night Shift Cold Caller',
             'slug' => 'night_shift_cold_caller',
         ]);
+    }
+
+    private function createSalesAgent(string $email): User
+    {
+        $role = Role::firstOrCreate(
+            ['slug' => 'sales_agent'],
+            ['name' => 'Sales Representative']
+        );
+        $role->permissions()->sync(Permission::pluck('id')->all());
+
+        return User::create([
+            'name' => 'Test Sales Agent',
+            'email' => $email,
+            'password' => 'agent-password',
+            'role' => 'sales_agent',
+            'role_id' => $role->id,
+            'status' => 'active',
+        ]);
+    }
+
+    private function createLead(User $agent, User $admin, array $attributes = []): Lead
+    {
+        return Lead::create(array_merge([
+            'assigned_to' => $agent->id,
+            'created_by' => $admin->id,
+            'client_name' => 'Test Client',
+            'phone' => '+1 555 0100',
+            'lead_type' => 'own',
+            'status' => 'new',
+        ], $attributes));
     }
 }
