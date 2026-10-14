@@ -315,7 +315,18 @@ class CrmWorkflowTest extends TestCase
             ['slug' => 'sales_agent'],
             ['name' => 'Sales Representative']
         );
-        $role->permissions()->sync(Permission::pluck('id')->all());
+        $role->permissions()->sync(
+            Permission::whereIn('slug', [
+                'leads.view_assigned',
+                'leads.create',
+                'leads.edit',
+                'leads.import',
+                'calls.log',
+                'meetings.manage',
+                'deals.manage',
+                'reports.view_own',
+            ])->pluck('id')->all()
+        );
 
         return User::create([
             'name' => 'Test Sales Agent',
