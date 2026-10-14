@@ -86,41 +86,55 @@ class LeadController extends Controller
             $createdCount = 0;
             $firstLead = null;
 
-            foreach ($request->input('leads') as $item) {
-                $clientName = trim($item['client_name'] ?? '');
-                $phone = trim($item['phone'] ?? '');
+            \Illuminate\Support\Facades\DB::beginTransaction();
+            try {
+                foreach ($request->input('leads') as $item) {
+                    $clientName = trim($item['client_name'] ?? '');
+                    $phone = trim($item['phone'] ?? '');
 
-                // Skip rows where both client_name and phone are empty
-                if (empty($clientName) && empty($phone)) {
-                    continue;
+                    // Skip rows where both client_name and phone are empty
+                    if (empty($clientName) && empty($phone)) {
+                        continue;
+                    }
+
+                    // If only phone is provided, generate a fallback prospect name
+                    if (empty($clientName)) {
+                        $clientName = 'Prospect (' . $phone . ')';
+                    }
+
+                    $lead = Lead::create([
+                        'lead_type' => $leadType,
+                        'assigned_to' => $assignedTo,
+                        'created_by' => $user->id,
+                        'client_name' => $clientName,
+                        'phone' => $phone ?: 'N/A',
+                        'email' => !empty($item['email']) ? trim($item['email']) : null,
+                        'notes' => !empty($item['notes']) ? trim($item['notes']) : null,
+                        'source' => 'Manual Entry',
+                        'status' => 'new',
+                    ]);
+
+                    if (!$firstLead) {
+                        $firstLead = $lead;
+                    }
+                    $createdCount++;
                 }
 
-                // If only phone is provided, generate a fallback prospect name
-                if (empty($clientName)) {
-                    $clientName = 'Prospect (' . $phone . ')';
+                if ($createdCount === 0) {
+                    \Illuminate\Support\Facades\DB::rollBack();
+                    return back()->withInput()->withErrors([
+                        'leads' => 'Please enter at least one lead with Client Name or Phone Number.'
+                    ]);
                 }
 
-                $lead = Lead::create([
-                    'lead_type' => $leadType,
-                    'assigned_to' => $assignedTo,
-                    'created_by' => $user->id,
-                    'client_name' => $clientName,
-                    'phone' => $phone ?: 'N/A',
-                    'email' => !empty($item['email']) ? trim($item['email']) : null,
-                    'notes' => !empty($item['notes']) ? trim($item['notes']) : null,
-                    'source' => 'Manual Entry',
-                    'status' => 'new',
+                \Illuminate\Support\Facades\DB::commit();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\DB::rollBack();
+                \Illuminate\Support\Facades\Log::error('Bulk lead creation failed: ' . $e->getMessage(), [
+                    'exception' => $e
                 ]);
-
-                if (!$firstLead) {
-                    $firstLead = $lead;
-                }
-                $createdCount++;
-            }
-
-            if ($createdCount === 0) {
                 return back()->withInput()->withErrors([
-                    'leads' => 'Please enter at least one lead with Client Name or Phone Number.'
+                    'leads' => 'Failed to save leads: ' . $e->getMessage()
                 ]);
             }
 
