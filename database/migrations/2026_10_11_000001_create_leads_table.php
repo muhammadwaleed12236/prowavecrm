@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('company_name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone');
+            $table->string('lead_type')->default('own'); // own, outsource
             $table->string('country')->nullable();
             $table->string('service_needed')->nullable();
             $table->string('source')->default('Cold Calling'); // Cold Calling, LinkedIn, Website, Referral, etc.

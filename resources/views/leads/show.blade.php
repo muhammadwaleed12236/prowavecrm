@@ -8,26 +8,30 @@
 <div class="space-y-6" x-data="{ callStatus: 'interested', activeTab: 'calls' }">
 
     <!-- Top Prospect Header Card -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden glass-card">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
             <div class="space-y-2">
-                <div class="flex items-center gap-3 flex-wrap">
-                    <h2 class="text-2xl font-extrabold text-white">{{ $lead->client_name }}</h2>
-                    @if($lead->company_name)
-                        <span class="text-sm font-semibold px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
-                            {{ $lead->company_name }}
+                <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <h2 class="text-lg sm:text-2xl font-extrabold text-white leading-tight">{{ $lead->client_name }}</h2>
+                    @if($lead->lead_type === 'outsource')
+                        <span class="text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
+                            Outsource Lead
+                        </span>
+                    @else
+                        <span class="text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase tracking-wider">
+                            Own Lead
                         </span>
                     @endif
-                    <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider {{ $lead->status_badge }}">
+                    <span class="px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider {{ $lead->status_badge }}">
                         {{ str_replace('_', ' ', $lead->status) }}
                     </span>
                 </div>
 
-                <div class="flex items-center gap-6 text-xs text-slate-300 flex-wrap">
-                    <div class="flex items-center gap-2">
+                <div class="flex items-center gap-4 sm:gap-6 text-[11px] sm:text-xs text-slate-300 flex-wrap">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
                         <span class="text-slate-400">Phone:</span>
-                        <a href="tel:{{ $lead->phone }}" class="font-mono font-bold text-white bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 hover:border-brand-500 transition flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <a href="tel:{{ $lead->phone }}" class="font-mono font-bold text-white bg-slate-950 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg border border-slate-800 hover:border-brand-500 transition flex items-center gap-1.5">
+                            <svg class="w-3 sm:w-3.5 h-3 sm:h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                             {{ $lead->phone }}
                         </a>
                     </div>
@@ -39,25 +43,20 @@
                         </div>
                     @endif
 
-                    @if($lead->country)
+                    @if($lead->notes)
                         <div class="flex items-center gap-1.5">
-                            <span class="text-slate-400">Country:</span>
-                            <span class="text-white font-medium">{{ $lead->country }}</span>
+                            <span class="text-slate-400">Remarks:</span>
+                            <span class="text-slate-300 italic">{{ Str::limit($lead->notes, 60) }}</span>
                         </div>
                     @endif
-
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-slate-400">Source:</span>
-                        <span class="text-slate-300">{{ $lead->source }}</span>
-                    </div>
                 </div>
 
                 <!-- 📱 Mobile Prominent Direct Dial Banner -->
-                <div class="md:hidden pt-3">
+                <div class="md:hidden pt-1.5">
                     <a href="tel:{{ $lead->phone }}" 
-                       class="flex items-center justify-center gap-2.5 w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition">
-                        <svg class="w-5 h-5 text-white animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        <span>Tap to Call Client: {{ $lead->phone }}</span>
+                       class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-600/30 transition">
+                        <svg class="w-4 h-4 text-white animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span>Call Client Now: {{ $lead->phone }}</span>
                     </a>
                 </div>
             </div>

@@ -53,46 +53,40 @@
     @endif
 
     <!-- Key Metrics Ribbon -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
         <!-- Total Leads -->
-        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Leads Pool</div>
-            <div class="text-3xl font-extrabold text-white">{{ $totalLeads }}</div>
-            <div class="mt-2 text-xs text-indigo-400 flex items-center gap-1">
-                <span>{{ $newLeadsCount }} uncontacted new leads</span>
-            </div>
+        <div class="p-3.5 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition glass-card-hover">
+            <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 truncate">Total Leads Pool</div>
+            <div class="text-xl sm:text-3xl font-extrabold text-white mobile-num">{{ $totalLeads }}</div>
+            <div class="mt-1 sm:mt-2 text-[10px] sm:text-xs text-indigo-400 truncate">{{ $newLeadsCount }} uncontacted</div>
         </div>
 
         <!-- In Pipeline -->
-        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Active Pipeline</div>
-            <div class="text-3xl font-extrabold text-cyan-400">{{ $interestedCount }}</div>
-            <div class="mt-2 text-xs text-slate-400">Callbacks & Interested</div>
+        <div class="p-3.5 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition glass-card-hover">
+            <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 truncate">Active Pipeline</div>
+            <div class="text-xl sm:text-3xl font-extrabold text-cyan-400 mobile-num">{{ $interestedCount }}</div>
+            <div class="mt-1 sm:mt-2 text-[10px] sm:text-xs text-slate-400 truncate">Callbacks & Interest</div>
         </div>
 
         <!-- Meetings Scheduled -->
-        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Meetings Booked</div>
-            <div class="text-3xl font-extrabold text-purple-400">{{ $meetingsScheduledCount }}</div>
-            <div class="mt-2 text-xs text-purple-400 flex items-center gap-1">
-                <span>{{ $upcomingMeetings->count() }} upcoming soon</span>
-            </div>
+        <div class="p-3.5 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition glass-card-hover">
+            <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 truncate">Meetings Booked</div>
+            <div class="text-xl sm:text-3xl font-extrabold text-purple-400 mobile-num">{{ $meetingsScheduledCount }}</div>
+            <div class="mt-1 sm:mt-2 text-[10px] sm:text-xs text-purple-400 truncate">{{ $upcomingMeetings->count() }} upcoming</div>
         </div>
 
         <!-- Deals Won -->
-        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition">
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Deals Won</div>
-            <div class="text-3xl font-extrabold text-emerald-400">{{ $dealsWonCount }}</div>
-            <div class="mt-2 text-xs text-emerald-400 flex items-center gap-1">
-                <span>Closed projects</span>
-            </div>
+        <div class="p-3.5 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 relative overflow-hidden group hover:border-slate-700 transition glass-card-hover">
+            <div class="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 truncate">Deals Won</div>
+            <div class="text-xl sm:text-3xl font-extrabold text-emerald-400 mobile-num">{{ $dealsWonCount }}</div>
+            <div class="mt-1 sm:mt-2 text-[10px] sm:text-xs text-emerald-400 truncate">Closed contracts</div>
         </div>
 
         <!-- Total Revenue -->
-        <div class="col-span-2 lg:col-span-1 p-5 rounded-2xl bg-gradient-to-br from-emerald-950/40 via-slate-900/90 to-slate-900/90 border border-emerald-500/30 relative overflow-hidden">
-            <div class="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1">Total Revenue Won</div>
-            <div class="text-3xl font-extrabold text-white">${{ number_format($totalRevenueWon, 2) }}</div>
-            <div class="mt-2 text-xs text-slate-400">ProWave Client Contracts</div>
+        <div class="col-span-2 lg:col-span-1 p-3.5 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-950/40 via-slate-900/90 to-slate-900/90 border border-emerald-500/30 relative overflow-hidden glass-card-hover">
+            <div class="text-[10px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1 truncate">Total Revenue Won</div>
+            <div class="text-xl sm:text-3xl font-extrabold text-white mobile-num font-mono">${{ number_format($totalRevenueWon, 0) }}</div>
+            <div class="mt-1 sm:mt-2 text-[10px] sm:text-xs text-slate-400 truncate">ProWave Contracts</div>
         </div>
     </div>
 

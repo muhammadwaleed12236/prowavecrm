@@ -29,6 +29,10 @@ class LeadController extends Controller
             });
         }
 
+        if ($request->filled('lead_type')) {
+            $query->where('lead_type', $request->lead_type);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -64,15 +68,77 @@ class LeadController extends Controller
     {
         $user = auth()->user();
 
+        // Check if bulk leads array is submitted
+        if ($request->has('leads') && is_array($request->input('leads'))) {
+            $request->validate([
+                'lead_type' => 'required|in:own,outsource',
+                'assigned_to' => 'nullable|exists:users,id',
+                'leads' => 'required|array|min:1',
+                'leads.*.client_name' => 'nullable|string|max:255',
+                'leads.*.phone' => 'nullable|string|max:50',
+                'leads.*.email' => 'nullable|email|max:255',
+                'leads.*.notes' => 'nullable|string',
+            ]);
+
+            $leadType = $request->input('lead_type');
+            $assignedTo = $user->isSuperAdmin() ? $request->input('assigned_to') : $user->id;
+
+            $createdCount = 0;
+            $firstLead = null;
+
+            foreach ($request->input('leads') as $item) {
+                $clientName = trim($item['client_name'] ?? '');
+                $phone = trim($item['phone'] ?? '');
+
+                // Skip rows where both client_name and phone are empty
+                if (empty($clientName) && empty($phone)) {
+                    continue;
+                }
+
+                // If only phone is provided, generate a fallback prospect name
+                if (empty($clientName)) {
+                    $clientName = 'Prospect (' . $phone . ')';
+                }
+
+                $lead = Lead::create([
+                    'lead_type' => $leadType,
+                    'assigned_to' => $assignedTo,
+                    'created_by' => $user->id,
+                    'client_name' => $clientName,
+                    'phone' => $phone ?: 'N/A',
+                    'email' => !empty($item['email']) ? trim($item['email']) : null,
+                    'notes' => !empty($item['notes']) ? trim($item['notes']) : null,
+                    'source' => 'Manual Entry',
+                    'status' => 'new',
+                ]);
+
+                if (!$firstLead) {
+                    $firstLead = $lead;
+                }
+                $createdCount++;
+            }
+
+            if ($createdCount === 0) {
+                return back()->withInput()->withErrors([
+                    'leads' => 'Please enter at least one lead with Client Name or Phone Number.'
+                ]);
+            }
+
+            if ($createdCount === 1 && $firstLead) {
+                return redirect()->route('leads.show', $firstLead)
+                    ->with('success', '1 lead created successfully!');
+            }
+
+            return redirect()->route('leads.index')
+                ->with('success', "Successfully created {$createdCount} leads in bulk!");
+        }
+
+        // Fallback for single submission (e.g. from existing single tests/forms)
         $validated = $request->validate([
+            'lead_type' => 'required|in:own,outsource',
             'client_name' => 'required|string|max:255',
-            'company_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:50',
-            'country' => 'nullable|string|max:100',
-            'service_needed' => 'nullable|string|max:255',
-            'source' => 'required|string|max:100',
-            'budget' => 'nullable|numeric|min:0',
+            'email' => 'nullable|email|max:255',
             'notes' => 'nullable|string',
             'assigned_to' => 'nullable|exists:users,id',
         ]);
@@ -129,15 +195,11 @@ class LeadController extends Controller
         }
 
         $validated = $request->validate([
+            'lead_type' => 'required|in:own,outsource',
             'client_name' => 'required|string|max:255',
-            'company_name' => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
             'phone' => 'required|string|max:50',
-            'country' => 'nullable|string|max:100',
-            'service_needed' => 'nullable|string|max:255',
-            'source' => 'required|string|max:100',
+            'email' => 'nullable|email|max:255',
             'status' => 'required|in:new,contacted,interested,callback,meeting_scheduled,proposal_sent,deal_won,lost,not_interested',
-            'budget' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'assigned_to' => 'nullable|exists:users,id',
         ]);

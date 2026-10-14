@@ -143,9 +143,9 @@ class CrmWorkflowTest extends TestCase
     {
         $admin = User::where('role', 'super_admin')->first();
 
-        $csvContent = "Client Name,Company Name,Phone,Email,Country,Estimated Budget\n" .
-                      "Bruce Wayne,Wayne Enterprises,+1 (555) 999-1122,bruce@wayne.com,USA,12000.00\n" .
-                      "Diana Prince,Themyscira Antiques,+1 (555) 888-3344,diana@museum.org,USA,6500.00\n";
+        $csvContent = "Lead Type,Client & Business Name,Phone,Email,Remarks\n" .
+                      "own,Bruce Wayne (Wayne Enterprises),+1 (555) 999-1122,bruce@wayne.com,Interested in security software\n" .
+                      "outsource,Diana Prince (Themyscira Antiques),+1 (555) 888-3344,diana@museum.org,Looking for antique catalog portal\n";
 
         $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('leads.csv', $csvContent);
 
@@ -157,13 +157,87 @@ class CrmWorkflowTest extends TestCase
         $response->assertRedirect('/leads');
 
         $this->assertDatabaseHas('leads', [
-            'client_name' => 'Bruce Wayne',
+            'lead_type' => 'own',
+            'client_name' => 'Bruce Wayne (Wayne Enterprises)',
             'phone' => '+1 (555) 999-1122',
+            'email' => 'bruce@wayne.com',
+            'notes' => 'Interested in security software',
         ]);
 
         $this->assertDatabaseHas('leads', [
-            'client_name' => 'Diana Prince',
+            'lead_type' => 'outsource',
+            'client_name' => 'Diana Prince (Themyscira Antiques)',
             'phone' => '+1 (555) 888-3344',
+            'email' => 'diana@museum.org',
+            'notes' => 'Looking for antique catalog portal',
+        ]);
+    }
+
+    public function test_create_lead_with_simplified_fields(): void
+    {
+        $admin = User::where('role', 'super_admin')->first();
+
+        $response = $this->actingAs($admin)->post('/leads', [
+            'lead_type' => 'outsource',
+            'client_name' => 'Clark Kent - Daily Planet',
+            'phone' => '+1 (555) 777-2211',
+            'email' => 'clark@dailyplanet.com',
+            'notes' => 'News media partnership inquiry',
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('leads', [
+            'lead_type' => 'outsource',
+            'client_name' => 'Clark Kent - Daily Planet',
+            'phone' => '+1 (555) 777-2211',
+            'email' => 'clark@dailyplanet.com',
+            'notes' => 'News media partnership inquiry',
+        ]);
+    }
+
+    public function test_create_leads_in_bulk_via_multiple_rows(): void
+    {
+        $admin = User::where('role', 'super_admin')->first();
+
+        $response = $this->actingAs($admin)->post('/leads', [
+            'lead_type' => 'own',
+            'leads' => [
+                [
+                    'client_name' => 'Barry Allen - Central Labs',
+                    'phone' => '+1 (555) 123-4567',
+                    'email' => 'barry@centrallabs.org',
+                    'notes' => 'Fast delivery software requirement',
+                ],
+                [
+                    'client_name' => 'Arthur Curry - Atlantis Water',
+                    'phone' => '+1 (555) 987-6543',
+                    'email' => 'arthur@atlantis.com',
+                    'notes' => 'Marine CRM portal',
+                ],
+                [
+                    'client_name' => '',
+                    'phone' => '',
+                    'email' => '',
+                    'notes' => '',
+                ],
+            ]
+        ]);
+
+        $response->assertRedirect('/leads');
+
+        $this->assertDatabaseHas('leads', [
+            'lead_type' => 'own',
+            'client_name' => 'Barry Allen - Central Labs',
+            'phone' => '+1 (555) 123-4567',
+            'email' => 'barry@centrallabs.org',
+        ]);
+
+        $this->assertDatabaseHas('leads', [
+            'lead_type' => 'own',
+            'client_name' => 'Arthur Curry - Atlantis Water',
+            'phone' => '+1 (555) 987-6543',
+            'email' => 'arthur@atlantis.com',
         ]);
     }
 

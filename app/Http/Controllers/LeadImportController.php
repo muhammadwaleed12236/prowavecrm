@@ -33,41 +33,29 @@ class LeadImportController extends Controller
             
             // CSV Header Row
             fputcsv($handle, [
-                'Client Name',
-                'Company Name',
+                'Lead Type',
+                'Client & Business Name',
                 'Phone',
                 'Email',
-                'Country',
-                'Service Needed',
-                'Source',
-                'Estimated Budget',
-                'Notes'
+                'Remarks'
             ]);
 
             // Sample Row 1
             fputcsv($handle, [
-                'Alex Turner',
-                'Northwind Tech',
+                'own',
+                'Alex Turner - Northwind Tech',
                 '+1 (555) 432-8765',
                 'alex@northwind.com',
-                'USA',
-                'Custom Web Portal & API',
-                'Cold Calling',
-                '4500.00',
-                'Interested in automating customer order workflows.'
+                'Interested in custom web development'
             ]);
 
             // Sample Row 2
             fputcsv($handle, [
-                'Emma Watson',
-                'Starlight Apparel',
+                'outsource',
+                'Emma Watson - Starlight Apparel',
                 '+44 20 7946 0192',
                 'emma@starlight.co.uk',
-                'UK',
-                'E-Commerce Shopify Redesign',
-                'Cold Outreach',
-                '3200.00',
-                'Looking to increase mobile checkout conversion.'
+                'Looking for Shopify redesign partner'
             ]);
 
             fclose($handle);
@@ -105,32 +93,24 @@ class LeadImportController extends Controller
         foreach ($headerRow as $colKey => $headerName) {
             if (!$headerName) continue;
             $clean = strtolower(trim((string)$headerName));
-            $clean = str_replace([' ', '_', '-'], '', $clean);
+            $clean = str_replace([' ', '_', '-', '/', '&'], '', $clean);
 
-            if (in_array($clean, ['clientname', 'name', 'client', 'contactname', 'fullname'])) {
+            if (in_array($clean, ['type', 'leadtype', 'category'])) {
+                $headerMap['lead_type'] = $colKey;
+            } elseif (in_array($clean, ['clientbusinessname', 'clientnamebusinessname', 'clientandbusinessname', 'clientname', 'name', 'client', 'contactname', 'fullname', 'company', 'companyname', 'business', 'businessname'])) {
                 $headerMap['client_name'] = $colKey;
-            } elseif (in_array($clean, ['company', 'companyname', 'business', 'businessname'])) {
-                $headerMap['company_name'] = $colKey;
-            } elseif (in_array($clean, ['phone', 'phonenumber', 'mobile', 'cell', 'tel', 'contact'])) {
+            } elseif (in_array($clean, ['phone', 'phonenumber', 'mobile', 'cell', 'tel', 'contact', 'phoneno'])) {
                 $headerMap['phone'] = $colKey;
             } elseif (in_array($clean, ['email', 'emailaddress', 'mail'])) {
                 $headerMap['email'] = $colKey;
-            } elseif (in_array($clean, ['country', 'region', 'state', 'location'])) {
-                $headerMap['country'] = $colKey;
-            } elseif (in_array($clean, ['serviceneeded', 'service', 'requirement', 'project', 'serviceinterest'])) {
-                $headerMap['service_needed'] = $colKey;
-            } elseif (in_array($clean, ['source', 'leadsource', 'channel'])) {
-                $headerMap['source'] = $colKey;
-            } elseif (in_array($clean, ['budget', 'estimatedbudget', 'amount', 'price'])) {
-                $headerMap['budget'] = $colKey;
-            } elseif (in_array($clean, ['notes', 'remarks', 'description', 'comments'])) {
+            } elseif (in_array($clean, ['remarks', 'notes', 'description', 'comments', 'remark'])) {
                 $headerMap['notes'] = $colKey;
             }
         }
 
         if (!isset($headerMap['client_name']) && !isset($headerMap['phone'])) {
             return back()->withErrors([
-                'file' => 'Header columns not recognized. Please make sure your file contains at least "Client Name" (or Name) and "Phone" columns. You can download our sample template.'
+                'file' => 'Header columns not recognized. Please make sure your file contains at least "Client & Business Name" (or Name) and "Phone" columns. You can download our sample template.'
             ]);
         }
 
@@ -163,6 +143,10 @@ class LeadImportController extends Controller
                 $phone = 'N/A';
             }
 
+            // Lead type: 'own' or 'outsource'
+            $rawType = isset($headerMap['lead_type']) ? strtolower(trim((string)($row[$headerMap['lead_type']] ?? ''))) : 'own';
+            $leadType = in_array($rawType, ['outsource', 'outsourced']) ? 'outsource' : 'own';
+
             // Determine assignment
             $assignedTo = null;
             if (!$user->isSuperAdmin()) {
@@ -177,28 +161,19 @@ class LeadImportController extends Controller
                 }
             }
 
-            $companyName = isset($headerMap['company_name']) ? trim((string)($row[$headerMap['company_name']] ?? '')) : null;
             $email = isset($headerMap['email']) ? trim((string)($row[$headerMap['email']] ?? '')) : null;
-            $country = isset($headerMap['country']) ? trim((string)($row[$headerMap['country']] ?? '')) : null;
-            $serviceNeeded = isset($headerMap['service_needed']) ? trim((string)($row[$headerMap['service_needed']] ?? '')) : null;
-            $source = isset($headerMap['source']) && !empty($row[$headerMap['source']]) ? trim((string)$row[$headerMap['source']]) : 'Excel Import';
-            $budgetRaw = isset($headerMap['budget']) ? preg_replace('/[^0-9.]/', '', (string)($row[$headerMap['budget']] ?? '')) : null;
-            $budget = !empty($budgetRaw) && is_numeric($budgetRaw) ? (float)$budgetRaw : null;
             $notes = isset($headerMap['notes']) ? trim((string)($row[$headerMap['notes']] ?? '')) : null;
 
             Lead::create([
                 'assigned_to' => $assignedTo,
                 'created_by' => $user->id,
+                'lead_type' => $leadType,
                 'client_name' => $clientName,
-                'company_name' => $companyName ?: null,
                 'email' => $email ?: null,
                 'phone' => $phone,
-                'country' => $country ?: null,
-                'service_needed' => $serviceNeeded ?: null,
-                'source' => $source,
+                'source' => 'Excel Import',
                 'status' => 'new',
-                'budget' => $budget,
-                'notes' => $notes ?: 'Imported via Excel spreadsheet on ' . now()->toFormattedDateString(),
+                'notes' => $notes ?: null,
             ]);
 
             $importedCount++;

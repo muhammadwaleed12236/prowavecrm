@@ -20,6 +20,7 @@ class Lead extends Model
         'company_name',
         'email',
         'phone',
+        'lead_type',
         'country',
         'service_needed',
         'source',

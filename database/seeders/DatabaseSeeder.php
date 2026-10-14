@@ -167,7 +167,8 @@ class DatabaseSeeder extends Seeder
         $leadAli1 = Lead::create([
             'assigned_to' => $agentAli->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'David Miller',
+            'lead_type' => 'own',
+            'client_name' => 'David Miller (Apex Logistics)',
             'company_name' => 'Apex Logistics LLC',
             'email' => 'david@apexlogistics.com',
             'phone' => '+1 (555) 234-8971',
@@ -184,7 +185,8 @@ class DatabaseSeeder extends Seeder
         $leadAli2 = Lead::create([
             'assigned_to' => $agentAli->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Sarah Jenkins',
+            'lead_type' => 'outsource',
+            'client_name' => 'Sarah Jenkins (Bloom Boutique)',
             'company_name' => 'Bloom Boutique Store',
             'email' => 'sarah@bloomboutique.co.uk',
             'phone' => '+44 20 7946 0912',
@@ -201,7 +203,8 @@ class DatabaseSeeder extends Seeder
         $leadAli3 = Lead::create([
             'assigned_to' => $agentAli->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Michael Chang',
+            'lead_type' => 'own',
+            'client_name' => 'Michael Chang (FinTech Nova)',
             'company_name' => 'FinTech Nova',
             'email' => 'mchang@fintechnova.io',
             'phone' => '+1 (415) 890-1234',
@@ -218,7 +221,8 @@ class DatabaseSeeder extends Seeder
         $leadAli4 = Lead::create([
             'assigned_to' => $agentAli->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Robert Fox',
+            'lead_type' => 'own',
+            'client_name' => 'Robert Fox (Fox Dental Care)',
             'company_name' => 'Fox Dental Care',
             'email' => 'info@foxdentalcare.com',
             'phone' => '+1 (312) 555-7890',
@@ -235,7 +239,8 @@ class DatabaseSeeder extends Seeder
         $leadAli5 = Lead::create([
             'assigned_to' => $agentAli->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Elena Rostova',
+            'lead_type' => 'outsource',
+            'client_name' => 'Elena Rostova (Skyline Travels)',
             'company_name' => 'Skyline Travels',
             'email' => 'elena@skylinetravels.ae',
             'phone' => '+971 50 123 4567',
@@ -253,7 +258,8 @@ class DatabaseSeeder extends Seeder
         $leadUsman1 = Lead::create([
             'assigned_to' => $agentUsman->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'James Wilson',
+            'lead_type' => 'own',
+            'client_name' => 'James Wilson (Wilson Real Estate)',
             'company_name' => 'Wilson Real Estate',
             'email' => 'james@wilsonproperties.com.au',
             'phone' => '+61 2 9876 5432',
@@ -270,7 +276,8 @@ class DatabaseSeeder extends Seeder
         $leadUsman2 = Lead::create([
             'assigned_to' => $agentUsman->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Amanda Green',
+            'lead_type' => 'outsource',
+            'client_name' => 'Amanda Green (EcoClean Services)',
             'company_name' => 'EcoClean Services',
             'email' => 'amanda@ecocleanservices.com',
             'phone' => '+1 (718) 444-9988',
@@ -287,7 +294,8 @@ class DatabaseSeeder extends Seeder
         $leadUsman3 = Lead::create([
             'assigned_to' => $agentUsman->id,
             'created_by' => $superAdmin->id,
-            'client_name' => 'Klaus Weber',
+            'lead_type' => 'own',
+            'client_name' => 'Klaus Weber (Bavaria Parts)',
             'company_name' => 'Bavaria Parts GmbH',
             'email' => 'klaus@bavariaparts.de',
             'phone' => '+49 89 1234567',

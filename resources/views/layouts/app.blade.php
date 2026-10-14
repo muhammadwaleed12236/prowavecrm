@@ -50,22 +50,58 @@
     <style>
         [x-cloak] { display: none !important; }
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #090d16;
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 3px;
+            background: #1e293b;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
+            background: #334155;
+        }
+
+        /* Glassmorphism & Modern Glow Effects */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(51, 65, 85, 0.45);
+        }
+        .glass-card-hover {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Compact & Crisp Typography specifically tuned for Mobile screens (< 768px) */
+        @media (max-width: 767px) {
+            html {
+                font-size: 13.5px; /* compact base font */
+            }
+            .mobile-tight {
+                letter-spacing: -0.015em;
+            }
+            .mobile-num {
+                font-size: 1.45rem !important;
+                line-height: 1.2 !important;
+            }
         }
     </style>
 </head>
-<body class="h-full bg-slate-950 font-sans antialiased text-slate-200 selection:bg-brand-500 selection:text-white" x-data="{ sidebarOpen: false }">
+<body class="h-full bg-[#070b14] font-sans antialiased text-slate-200 selection:bg-brand-500 selection:text-white relative" x-data="{ sidebarOpen: false }">
+    <!-- Ambient Background Glow Gradients -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-600/8 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-purple-600/8 rounded-full blur-3xl"></div>
+    </div>
 
     <div class="min-h-full flex flex-col md:flex-row">
         <!-- Mobile Backdrop Overlay -->
@@ -214,36 +250,36 @@
         </aside>
 
         <!-- Main Workspace -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-950">
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-950/70 relative z-10">
             <!-- Top App Bar -->
-            <header class="h-20 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">
-                <div class="flex items-center gap-4">
-                    <button @click="sidebarOpen = true" class="md:hidden text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800/50">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <header class="h-16 md:h-20 border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl flex items-center justify-between px-3.5 sm:px-6 sticky top-0 z-40">
+                <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                    <button @click="sidebarOpen = true" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg bg-slate-800/60 border border-slate-700/60">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight text-white">@yield('page_heading', 'Dashboard')</h1>
-                        <p class="text-xs text-slate-400 hidden sm:block">@yield('page_subheading', 'ProWave Technologies Sales CRM System')</p>
+                    <div class="min-w-0">
+                        <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-white truncate">@yield('page_heading', 'Dashboard')</h1>
+                        <p class="text-[11px] sm:text-xs text-slate-400 hidden sm:block">@yield('page_subheading', 'ProWave Technologies Sales CRM System')</p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     <!-- Quick Import Excel Button -->
-                    <a href="{{ route('leads.import.show') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition">
-                        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <a href="{{ route('leads.import.show') }}" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                         <span class="hidden sm:inline">Import Excel</span>
                     </a>
 
                     <!-- Quick New Lead Button -->
-                    <a href="{{ route('leads.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-600/25 transition">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        <span>New Lead</span>
+                    <a href="{{ route('leads.create') }}" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white shadow-md shadow-brand-600/25 transition">
+                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span class="hidden xs:inline">New Lead</span>
                     </a>
 
                     <!-- User Pill -->
-                    <div class="h-10 px-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
-                        <span class="text-xs font-medium text-slate-300 hidden md:inline">{{ auth()->user()->email }}</span>
+                    <div class="h-8 sm:h-10 px-2 sm:px-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                        <span class="text-[11px] sm:text-xs font-medium text-slate-300 hidden md:inline">{{ auth()->user()->email }}</span>
                     </div>
                 </div>
             </header>
@@ -281,12 +317,12 @@
     </div>
 
     <!-- Mobile Bottom Navigation Dock (Appears only on mobile/tablet screens < 768px) -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 border-t border-slate-800/90 backdrop-blur-xl px-2 py-2">
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#090e1a]/95 border-t border-slate-800/90 backdrop-blur-2xl px-1.5 py-1.5 shadow-2xl">
         <div class="flex items-center justify-around">
             <!-- Home -->
             <a href="{{ route('dashboard') }}" 
-               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[10px] font-semibold transition {{ request()->routeIs('dashboard') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-[9.5px] tracking-tight font-semibold transition {{ request()->routeIs('dashboard') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
                 <span>Dashboard</span>
@@ -294,8 +330,8 @@
 
             <!-- Leads -->
             <a href="{{ route('leads.index') }}" 
-               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[10px] font-semibold transition {{ request()->routeIs('leads.*') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-[9.5px] tracking-tight font-semibold transition {{ request()->routeIs('leads.*') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
                 <span>Leads</span>
@@ -306,20 +342,20 @@
                 $mobileAlertCount = \App\Models\Meeting::visibleTo(auth()->user())->whereDate('scheduled_at', \Carbon\Carbon::today())->where('status', 'scheduled')->count();
             @endphp
             <a href="{{ route('meetings.index') }}" 
-               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[10px] font-semibold transition relative {{ request()->routeIs('meetings.*') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-[9.5px] tracking-tight font-semibold transition relative {{ request()->routeIs('meetings.*') ? 'text-brand-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <span>Meetings</span>
                 @if($mobileAlertCount > 0)
-                    <span class="absolute top-0.5 right-2 w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span class="absolute top-0.5 right-2 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                 @endif
             </a>
 
             <!-- Won Deals -->
             <a href="{{ route('deals.index') }}" 
-               class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[10px] font-semibold transition {{ request()->routeIs('deals.*') ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
-                <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-[9.5px] tracking-tight font-semibold transition {{ request()->routeIs('deals.*') ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-slate-200' }}">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <span>Deals</span>
@@ -328,8 +364,8 @@
             <!-- Menu Trigger -->
             <button @click="sidebarOpen = true" 
                     type="button"
-                    class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-[10px] font-semibold text-slate-400 hover:text-slate-200">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    class="flex flex-col items-center gap-0.5 py-1 px-2 rounded-xl text-[9.5px] tracking-tight font-semibold text-slate-400 hover:text-slate-200">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
                 <span>Menu</span>

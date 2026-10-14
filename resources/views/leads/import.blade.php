@@ -107,40 +107,28 @@
             @endif
 
             <!-- Supported Columns Guide -->
-            <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recognized Excel Column Headers:</h4>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-slate-300">
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-brand-400 font-bold block">Client Name *</span>
-                        <span class="text-[10px] text-slate-400">or Name, Full Name</span>
+            <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recognized Spreadsheet Columns:</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs text-slate-300">
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-purple-400 font-bold block">Lead Type</span>
+                        <span class="text-[11px] text-slate-400">Values: <code class="text-white">own</code> or <code class="text-white">outsource</code> (defaults to own)</span>
                     </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-brand-400 font-bold block">Client / Business Name *</span>
+                        <span class="text-[11px] text-slate-400">or Name, Full Name, Company</span>
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
                         <span class="text-brand-400 font-bold block">Phone *</span>
-                        <span class="text-[10px] text-slate-400">or Mobile, Contact</span>
+                        <span class="text-[11px] text-slate-400">or Mobile, Contact, Phone No</span>
                     </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Company Name</span>
-                        <span class="text-[10px] text-slate-400">or Company, Business</span>
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <span class="text-slate-300 font-semibold block">Email (Optional)</span>
+                        <span class="text-[11px] text-slate-400">or Email Address, Mail</span>
                     </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Email</span>
-                        <span class="text-[10px] text-slate-400">or Email Address</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Country</span>
-                        <span class="text-[10px] text-slate-400">or Region, State</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Service Needed</span>
-                        <span class="text-[10px] text-slate-400">or Project, Requirement</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Estimated Budget</span>
-                        <span class="text-[10px] text-slate-400">or Budget, Amount</span>
-                    </div>
-                    <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
-                        <span class="text-slate-300 font-semibold block">Notes</span>
-                        <span class="text-[10px] text-slate-400">or Remarks, Comments</span>
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 sm:col-span-2">
+                        <span class="text-slate-300 font-semibold block">Remarks (Optional)</span>
+                        <span class="text-[11px] text-slate-400">or Notes, Comments, Description</span>
                     </div>
                 </div>
             </div>
