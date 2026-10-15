@@ -51,7 +51,7 @@ class LeadController extends Controller
         }
 
         $leads = $query->latest('updated_at')->paginate(15)->withQueryString();
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('leads.index', compact('leads', 'agents'));
     }
@@ -59,7 +59,7 @@ class LeadController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->where('status', 'active')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('leads.create', compact('agents'));
     }
@@ -182,7 +182,7 @@ class LeadController extends Controller
         }
 
         $lead->load(['assignedAgent', 'callLogs.user', 'meetings.user', 'deal.user']);
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->where('status', 'active')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('leads.show', compact('lead', 'agents'));
     }
@@ -195,7 +195,7 @@ class LeadController extends Controller
             abort(403, 'Unauthorized. You can only edit leads assigned to you.');
         }
 
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->where('status', 'active')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('leads.edit', compact('lead', 'agents'));
     }

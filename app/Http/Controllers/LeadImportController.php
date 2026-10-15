@@ -13,7 +13,7 @@ class LeadImportController extends Controller
     public function show()
     {
         $user = auth()->user();
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->where('status', 'active')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('leads.import', compact('agents'));
     }
@@ -115,7 +115,7 @@ class LeadImportController extends Controller
         }
 
         $activeAgents = $user->isSuperAdmin() 
-            ? User::where('role', 'sales_agent')->where('status', 'active')->get()
+            ? User::assignableAgents()->get()
             : collect();
 
         $assignmentMode = $request->input('assignment_mode', 'specific');

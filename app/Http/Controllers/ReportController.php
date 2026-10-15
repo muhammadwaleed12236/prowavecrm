@@ -47,7 +47,7 @@ class ReportController extends Controller
         }
         $detailedLogs = $callLogsQuery->latest()->take(50)->get();
 
-        $agents = $user->isSuperAdmin() ? User::where('role', 'sales_agent')->get() : collect();
+        $agents = $user->isSuperAdmin() ? User::assignableAgents()->get() : collect();
 
         return view('reports.index', compact('reports', 'summary', 'detailedLogs', 'agents', 'date'));
     }

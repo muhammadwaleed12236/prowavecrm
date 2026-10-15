@@ -99,6 +99,25 @@ class User extends Authenticatable
         return $this->role === 'sales_agent' || ($this->roleModel && $this->roleModel->slug === 'sales_agent');
     }
 
+    /**
+     * Scope query to find all users eligible to be assigned leads.
+     * Includes all sales agents, custom roles, or any user that isn't solely a super admin,
+     * or any user with role != 'super_admin'.
+     */
+    public function scopeAssignableAgents($query)
+    {
+        return $query->where('status', 'active')
+            ->where(function ($q) {
+                $q->where('role', '!=', 'super_admin')
+                  ->orWhereNull('role');
+            })
+            ->where(function ($q) {
+                $q->whereDoesntHave('roleModel', function ($rq) {
+                    $rq->where('slug', 'super_admin');
+                });
+            });
+    }
+
     public function leads(): HasMany
     {
         return $this->hasMany(Lead::class, 'assigned_to');

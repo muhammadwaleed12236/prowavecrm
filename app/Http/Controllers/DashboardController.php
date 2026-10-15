@@ -62,7 +62,7 @@ class DashboardController extends Controller
             ->get();
 
         // Team performance overview
-        $agents = User::where('role', 'sales_agent')
+        $agents = User::assignableAgents()
             ->withCount([
                 'leads',
                 'callLogs as calls_today' => function ($query) {
